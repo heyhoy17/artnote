@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>아트노트</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+  @font-face {
+    font-family: 'OKIticon';
+    src: url('https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans/fonts/webfonts/variable/WantedSans-Variable.woff2') format('woff2');
+  }
+  :root {
+    --cream: #FBF6EC; --warm: #F2E9D8;
+    --ink: #1A1612; --ink2: #3D3530; --ink3: #7A6F67;
+    --accent: #E05A00; --accent2: #FF7A2F;
+    --border: rgba(26,22,18,0.12); --border2: rgba(26,22,18,0.22);
+    --card: #FFFDF8; --radius: 3px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Pretendard',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;overflow-x:hidden;}
+  .logo-text{font-family:'Pretendard',sans-serif;font-weight:700;letter-spacing:-0.03em;}
+  .logo-text span{color:var(--accent);}
+
+  .screen{display:none;min-height:100vh;}
+  .screen.active{display:flex;flex-direction:column;}
+
+  /* LANDING */
+  #screen-landing{align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .landing-bg{position:absolute;inset:0;background:#FBF6EC;}
+  .landing-content{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;padding:3rem 2rem;animation:fadeUp 0.9s ease both;}
+  .landing-title{font-family:'Pretendard',sans-serif;font-size:clamp(2.8rem,8vw,5rem);font-weight:700;line-height:1.1;color:var(--ink);margin-bottom:1.6rem;letter-spacing:-0.04em;}
+  .landing-title span{color:var(--accent);}
+  .landing-sub{font-size:13px;color:var(--ink3);line-height:1.5;max-width:420px;margin-bottom:2.8rem;font-weight:400;letter-spacing:-0.01em;}
+  .btn-group{display:flex;flex-direction:column;gap:10px;align-items:center;width:100%;max-width:260px;}
+  .btn-primary{width:100%;padding:14px 24px;font-size:14px;font-weight:500;background:var(--ink);color:var(--cream);border:none;border-radius:var(--radius);cursor:pointer;letter-spacing:0.04em;transition:all 0.2s;font-family:'Pretendard',sans-serif;}
+  .btn-primary:hover{background:var(--ink2);transform:translateY(-1px);}
+  .btn-secondary{width:100%;padding:13px 24px;font-size:14px;font-weight:400;background:#fff;color:var(--ink);border:1.5px solid var(--ink);border-radius:var(--radius);cursor:pointer;transition:all 0.2s;font-family:'Pretendard',sans-serif;}
+  .btn-secondary:hover{background:var(--warm);}
+  .landing-deco{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:0.15em;color:var(--ink3);opacity:0.5;white-space:nowrap;}
+
+  /* AUTH */
+  #screen-auth{align-items:center;justify-content:center;position:relative;}
+  .auth-card{width:100%;max-width:400px;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:2.5rem;animation:fadeUp 0.5s ease both;}
+  .auth-back{position:absolute;top:2rem;left:2rem;font-size:13px;color:var(--ink3);cursor:pointer;display:flex;align-items:center;gap:6px;border:none;background:none;font-family:'Pretendard',sans-serif;}
+  .auth-back:hover{color:var(--ink);}
+  .auth-logo{font-family:'Pretendard',sans-serif;font-size:56px;font-weight:700;color:var(--ink);margin-bottom:12px;letter-spacing:-0.04em;line-height:1;}
+  .auth-logo span{color:var(--accent);}
+  .auth-tabs{display:flex;margin-bottom:1.5rem;border-bottom:1px solid var(--border);}
+  .auth-tab{flex:1;padding:8px;text-align:center;font-size:13px;cursor:pointer;color:var(--ink3);border:none;background:none;font-family:'Pretendard',sans-serif;border-bottom:2px solid transparent;transition:all 0.15s;margin-bottom:-1px;}
+  .auth-tab.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:500;}
+  .form-field{margin-bottom:1rem;}
+  .form-field label{font-size:12px;color:var(--ink3);display:block;margin-bottom:6px;}
+  .form-field input{width:100%;padding:10px 12px;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--ink);font-family:'Pretendard',sans-serif;transition:border 0.15s;}
+  .form-field input:focus{outline:none;border-color:var(--accent2);}
+  .auth-submit{width:100%;padding:12px;font-size:14px;font-weight:500;background:var(--ink);color:var(--cream);border:none;border-radius:var(--radius);cursor:pointer;font-family:'Pretendard',sans-serif;margin-top:0.5rem;transition:background 0.15s;}
+  .auth-submit:hover{background:var(--ink2);}
+  .auth-msg{font-size:12px;color:#c0392b;margin-top:8px;text-align:center;min-height:18px;}
+
+  /* APP SHELL */
+  #screen-app{flex-direction:column;}
+  .app-header{display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:58px;border-bottom:1px solid var(--border);background:var(--card);position:sticky;top:0;z-index:100;}
+  .app-logo{font-family:'Pretendard',sans-serif;font-size:18px;font-weight:700;letter-spacing:-0.03em;}
+  .app-logo span{color:var(--accent);}
+  .app-nav{display:flex;gap:4px;}
+  .nav-btn{padding:6px 14px;font-size:13px;border-radius:var(--radius);cursor:pointer;border:1px solid transparent;background:none;font-family:'Pretendard',sans-serif;color:var(--ink3);transition:all 0.15s;}
+  .nav-btn.on{background:var(--warm);color:var(--accent);border-color:var(--border);font-weight:500;}
+  .nav-btn:hover:not(.on){color:var(--ink);}
+  .app-user{display:flex;align-items:center;gap:10px;}
+  .user-avatar{font-size:14px;font-weight:600;color:var(--accent);font-family:'Pretendard',sans-serif;}
+  .logout-btn{font-size:12px;color:var(--ink3);cursor:pointer;border:none;background:none;font-family:'Pretendard',sans-serif;padding:4px 8px;border-radius:var(--radius);transition:all 0.15s;}
+  .logout-btn:hover{color:var(--ink);background:var(--warm);}
+  .app-body{flex:1;}
+
+  /* SHARED TAB */
+  .tab-pane{max-width:680px;margin:0 auto;padding:2.5rem 2rem;}
+  .tab-heading{font-family:'Pretendard',sans-serif;font-size:22px;font-weight:700;margin-bottom:0.4rem;color:var(--accent);}
+  .tab-desc{font-size:13px;color:var(--ink3);margin-bottom:2.5rem;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:0.8rem;}
+  .write-label{font-size:12px;color:var(--ink3);display:block;margin-bottom:8px;}
+  .write-input,.write-select{width:100%;padding:10px 36px 10px 12px;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--ink);font-family:'Pretendard',sans-serif;transition:border 0.15s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A6F67' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+  .write-input{background-image:none;padding:10px 12px;}
+  .write-input:focus,.write-select:focus{outline:none;border-color:var(--accent2);}
+
+  /* 피드백 노트 */
+  .tone-row{margin-bottom:1.4rem;margin-top:0.8rem;}
+  .tag-group{display:flex;flex-wrap:wrap;gap:6px;}
+  .tone-tag{font-size:12px;padding:5px 12px;border-radius:999px;cursor:pointer;border:1px solid var(--border);color:var(--ink3);transition:all 0.15s;background:transparent;font-family:'Pretendard',sans-serif;}
+  .tone-tag.on{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+  .memo-hint-row{display:flex;justify-content:flex-start;margin-top:1rem;margin-bottom:8px;}
+  .memo-hint{font-size:12px;color:var(--ink3);}
+  textarea.write-area{width:100%;min-height:120px;padding:12px;font-size:14px;line-height:1.8;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--ink);font-family:'Pretendard',sans-serif;resize:vertical;transition:border 0.15s;}
+  textarea.write-area:focus{outline:none;border-color:var(--accent2);}
+  .action-row{display:flex;gap:8px;margin-top:1.2rem;}
+  .btn-generate{flex:1;padding:12px;font-size:14px;font-weight:500;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-family:'Pretendard',sans-serif;transition:all 0.2s;}
+  .btn-generate:hover{background:#C24E00;transform:translateY(-1px);}
+  .btn-generate:disabled{background:var(--ink3);cursor:not-allowed;transform:none;}
+  .btn-reset-sm{padding:12px 18px;font-size:13px;background:var(--ink);color:#fff;border:1px solid var(--ink);border-radius:var(--radius);cursor:pointer;font-family:'Pretendard',sans-serif;transition:all 0.15s;}
+  .btn-reset-sm:hover{background:var(--ink2);}
+  .spinner{display:none;margin-top:1.2rem;font-size:13px;color:var(--ink3);align-items:center;gap:8px;}
+  .spinner.show{display:flex;}
+  .spin{width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin 0.7s linear infinite;}
+  .result-wrap{display:none;margin-top:1.5rem;background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1.25rem 1.5rem;}
+  .result-wrap.show{display:block;animation:fadeUp 0.4s ease both;}
+  .result-label{font-size:11px;letter-spacing:0.12em;color:var(--accent);text-transform:uppercase;margin-bottom:10px;}
+  .result-text{font-size:14px;line-height:1.9;color:var(--ink2);white-space:pre-wrap;}
+  .result-actions{display:flex;gap:8px;margin-top:1rem;}
+  .btn-action{font-size:12px;padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:transparent;color:var(--ink3);font-family:'Pretendard',sans-serif;transition:all 0.15s;}
+  .btn-action:hover{background:var(--warm);color:var(--ink);}
+  .btn-action.save{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+  .btn-action.save:hover{background:var(--ink2);}
+
+  /* 문자 노트 */
+  .msg-categories{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem;}
+  .cat-btn{font-size:13px;padding:7px 16px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--ink3);cursor:pointer;font-family:'Pretendard',sans-serif;transition:all 0.15s;}
+  .cat-btn.on{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+  .cat-btn:hover:not(.on){background:var(--warm);color:var(--ink);}
+  .msg-form{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1rem;}
+  .msg-form-title{font-size:14px;font-weight:600;margin-bottom:1rem;color:var(--ink);}
+  .msg-field{margin-bottom:0.9rem;}
+  .msg-field label{font-size:12px;color:var(--ink3);display:block;margin-bottom:5px;}
+  .msg-field input,.msg-field textarea{width:100%;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--ink);font-family:'Pretendard',sans-serif;transition:border 0.15s;}
+  .msg-field select{width:100%;padding:9px 36px 9px 12px;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--ink);font-family:'Pretendard',sans-serif;transition:border 0.15s;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A6F67' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+  .msg-field input:focus,.msg-field select:focus,.msg-field textarea:focus{outline:none;border-color:var(--accent2);}
+  .msg-field textarea{min-height:80px;resize:vertical;line-height:1.7;}
+
+  /* 아이디어 노트 */
+  .idea-input-area{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1.5rem;margin-bottom:1rem;}
+  .idea-chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem;}
+  .idea-chip{font-size:12px;padding:5px 12px;border-radius:999px;border:1px solid var(--border);color:var(--ink3);cursor:pointer;font-family:'Pretendard',sans-serif;transition:all 0.15s;background:transparent;}
+  .idea-chip.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .idea-chip:hover:not(.on){background:var(--warm);color:var(--ink);}
+
+  /* 저장 노트 */
+  .save-tabs{display:flex;gap:6px;margin-bottom:1.5rem;flex-wrap:wrap;}
+  .save-tab{font-size:13px;padding:6px 16px;border-radius:999px;border:1px solid var(--border);background:transparent;color:var(--ink3);cursor:pointer;font-family:'Pretendard',sans-serif;transition:all 0.15s;}
+  .save-tab.on{background:var(--ink);color:var(--cream);border-color:var(--ink);}
+  .save-tab:hover:not(.on){background:var(--warm);color:var(--ink);}
+  .select-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;min-height:28px;}
+  .select-bar-left{display:flex;align-items:center;gap:8px;}
+  .check-all{font-size:12px;color:var(--ink3);cursor:pointer;display:flex;align-items:center;gap:5px;}
+  .del-selected{font-size:12px;padding:5px 12px;border-radius:var(--radius);border:1px solid #e74c3c;background:transparent;color:#e74c3c;cursor:pointer;font-family:'Pretendard',sans-serif;transition:all 0.15s;display:none;}
+  .del-selected.show{display:block;}
+  .del-selected:hover{background:#fdecea;}
+  .history-search{display:flex;gap:8px;margin-bottom:1rem;}
+  .history-search input{flex:1;padding:9px 12px;font-size:14px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--ink);font-family:'Pretendard',sans-serif;}
+  .history-search input:focus{outline:none;border-color:var(--accent2);}
+  .history-empty{text-align:center;padding:4rem 0;color:var(--ink3);font-size:14px;line-height:1.5;letter-spacing:-0.02em;}
+  .history-list{display:flex;flex-direction:column;gap:10px;}
+  .history-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1.1rem 1.25rem;cursor:pointer;transition:all 0.15s;display:flex;gap:10px;align-items:flex-start;}
+  .history-card:hover{border-color:var(--border2);background:var(--warm);}
+  .hc-check{margin-top:2px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;width:15px;height:15px;}
+  .hc-body{flex:1;min-width:0;}
+  .hc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .hc-name{font-size:14px;font-weight:500;color:var(--ink);}
+  .hc-meta{display:flex;gap:6px;align-items:center;}
+  .hc-tag{font-size:11px;padding:3px 9px;border-radius:999px;background:var(--warm);color:var(--ink3);border:1px solid var(--border);}
+  .hc-date{font-size:11px;color:var(--ink3);}
+  .hc-preview{font-size:13px;color:var(--ink3);line-height:1.6;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+
+  /* MODAL */
+  .modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(26,22,18,0.5);align-items:center;justify-content:center;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:var(--card);border-radius:6px;padding:2rem;max-width:520px;width:calc(100% - 2rem);border:1px solid var(--border);animation:fadeUp 0.3s ease both;}
+  .modal-label{font-size:11px;letter-spacing:0.12em;color:var(--accent);margin-bottom:6px;text-transform:uppercase;}
+  .modal-name{font-size:18px;font-weight:600;margin-bottom:6px;}
+  .modal-info{font-size:12px;color:var(--ink3);margin-bottom:1rem;}
+  .modal-body{font-size:14px;line-height:1.9;color:var(--ink2);white-space:pre-wrap;margin-bottom:1.5rem;}
+  .modal-close{padding:9px 20px;font-size:13px;background:var(--ink);color:var(--cream);border:none;border-radius:var(--radius);cursor:pointer;font-family:'Pretendard',sans-serif;}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  @keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-bg"></div>
+  <div class="landing-content">
+    <div style="background:var(--accent);color:#fff;font-size:13px;font-weight:500;padding:9px 22px;border-radius:999px;margin-bottom:1.4rem;position:relative;display:inline-block;letter-spacing:0.01em;">
+      선생님들만을 위한 노트
+      <span style="position:absolute;bottom:-8px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid var(--accent);"></span>
+    </div>
+    <h1 class="landing-title">아트<span>노트</span></h1>
+    <p class="landing-sub">학부모님들께 드리는 피드백 매번 생각하시기 어려우시죠?<br>핵심 키워드만 입력하면 완성해드려요!</p>
+    <div class="btn-group">
+      <button class="btn-primary" onclick="goAuth('login')">로그인하기</button>
+      <button class="btn-secondary" onclick="goAuth('signup')">가입하기</button>
+    </div>
+  </div>
+  <div class="landing-deco">아트노트 · AI POWERED FEEDBACK</div>
+</div>
+
+<!-- AUTH -->
+<div id="screen-auth" class="screen">
+  <button class="auth-back" onclick="goScreen('landing')">← 돌아가기</button>
+  <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:400px;">
+    <div class="auth-logo">아트<span>노트</span></div>
+    <div class="auth-card" style="width:100%;">
+      <div class="auth-tabs">
+        <button class="auth-tab on" id="tab-login-btn" onclick="switchAuthTab('login')">로그인</button>
+        <button class="auth-tab" id="tab-signup-btn" onclick="switchAuthTab('signup')">가입하기</button>
+      </div>
+      <div id="form-login">
+        <div class="form-field"><label>아이디</label><input type="text" id="login-id" placeholder="아이디 입력"/></div>
+        <div class="form-field"><label>비밀번호</label><input type="password" id="login-pw" placeholder="비밀번호 입력"/></div>
+        <button class="auth-submit" onclick="doLogin()">로그인</button>
+        <div class="auth-msg" id="login-msg"></div>
+      </div>
+      <div id="form-signup" style="display:none">
+        <div class="form-field"><label>이름 / 닉네임</label><input type="text" id="su-name" placeholder="예) 김선생, 박미술"/></div>
+        <div class="form-field"><label>아이디</label><input type="text" id="su-id" placeholder="영문+숫자 4자 이상"/></div>
+        <div class="form-field"><label>비밀번호</label><input type="password" id="su-pw" placeholder="6자 이상"/></div>
+        <button class="auth-submit" onclick="doSignup()">가입하기</button>
+        <div class="auth-msg" id="signup-msg"></div>
+      </div>
+    </div>
+    <div style="margin-top:12px;padding:10px 14px;background:#FFF8F4;border:1px solid rgba(224,90,0,0.18);border-radius:var(--radius);font-size:12px;color:var(--ink3);line-height:1.6;text-align:center;width:100%;">
+      아이디 · 비밀번호 찾기 기능이 없습니다.<br>꼭 기억해 두시거나 메모해 두세요.
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="screen-app" class="screen">
+  <header class="app-header">
+    <div class="app-logo">아트<span>노트</span></div>
+    <div class="app-nav">
+      <button class="nav-btn on" id="nav-feedback" onclick="switchTab('feedback')">피드백 노트</button>
+      <button class="nav-btn" id="nav-msgnote" onclick="switchTab('msgnote')">문자 노트</button>
+      <button class="nav-btn" id="nav-idea" onclick="switchTab('idea')">아이디어 노트</button>
+      <button class="nav-btn" id="nav-history" onclick="switchTab('history')">저장 노트</button>
+    </div>
+    <div class="app-user">
+      <div class="user-avatar" id="user-avatar"></div>
+      <button class="logout-btn" onclick="doLogout()"><span style="display:inline-block;width:1px;height:12px;background:var(--border2);vertical-align:middle;margin-right:8px;"></span>로그아웃</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+
+    <!-- 피드백 노트 -->
+    <div id="tab-feedback" class="tab-pane">
+      <div class="tab-heading">피드백 노트</div>
+      <div class="tab-desc">핵심 내용만 적어주세요. AI가 자연스럽게 완성해드릴게요.</div>
+      <div class="row2">
+        <div><label class="write-label">학생 이름</label><input class="write-input" id="w-name" type="text"/></div>
+        <div><label class="write-label">피드백 말투</label>
+          <select class="write-select" id="w-subject">
+            <option value="">선택</option>
+            <option value="친절하게">😊 친절하게</option>
+            <option value="따뜻하게">🌿 따뜻하게</option>
+            <option value="전문적이게">📋 전문적이게</option>
+            <option value="이모지 섞어서">✨ 이모지 섞어서</option>
+            <option value="간결하게">⚡ 간결하게</option>
+            <option value="격려하듯">💪 격려하듯</option>
+            <option value="부드럽게">🍀 부드럽게</option>
+            <option value="밝고 활기차게">☀️ 밝고 활기차게</option>
+          </select>
+        </div>
+      </div>
+      <div class="row2" style="margin-bottom:1rem">
+        <div><label class="write-label">학생 나이</label>
+          <select class="write-select" id="w-age">
+            <option value="">선택 안 함</option>
+            <option value="5~6세 (유아)">5~6세 (유아)</option>
+            <option value="7세 (유치원)">7세 (유치원)</option>
+            <option value="초등 저학년 (1~3학년)">초등 저학년 (1~3학년)</option>
+            <option value="초등 고학년 (4~6학년)">초등 고학년 (4~6학년)</option>
+            <option value="중학생">중학생</option>
+            <option value="고등학생">고등학생</option>
+            <option value="성인">성인</option>
+          </select>
+        </div>
+        <div></div>
+      </div>
+      <div class="tone-row">
+        <label class="write-label">피드백 방향 <span style="color:var(--ink3);font-size:11px;font-weight:400">(여러 개 선택 가능)</span></label>
+        <div class="tag-group" id="tone-tags">
+          <button class="tone-tag" data-val="칭찬 위주">칭찬 위주</button>
+          <button class="tone-tag" data-val="균형잡힌">균형잡힌</button>
+          <button class="tone-tag" data-val="개선 중심">개선 중심</button>
+          <button class="tone-tag" data-val="격려하는">격려하는</button>
+          <button class="tone-tag" data-val="따뜻한">따뜻한</button>
+          <button class="tone-tag" data-val="전문적인">전문적인</button>
+          <button class="tone-tag" data-val="성장에 집중">성장에 집중</button>
+          <button class="tone-tag" data-val="구체적 피드백">구체적 피드백</button>
+          <button class="tone-tag" data-val="다음 수업 예고">다음 수업 예고</button>
+          <button class="tone-tag" data-val="학부모에게">학부모에게</button>
+          <button class="tone-tag" data-val="짧게">짧게</button>
+          <button class="tone-tag" data-val="자세하게">자세하게</button>
+          <button class="tone-tag" data-val="자신감 심어주기">자신감 심어주기</button>
+          <button class="tone-tag" data-val="집중력 언급">집중력 언급</button>
+          <button class="tone-tag" data-val="참여 태도 칭찬">참여 태도 칭찬</button>
+          <button class="tone-tag" data-val="꼼꼼함 강조">꼼꼼함 강조</button>
+          <button class="tone-tag" data-val="상상력·창의성 언급">상상력·창의성</button>
+          <button class="tone-tag" data-val="긍정적 변화 강조">긍정적 변화 강조</button>
+          <button class="tone-tag" data-val="과정을 칭찬">과정을 칭찬</button>
+          <button class="tone-tag" data-val="다음 목표 제시">다음 목표 제시</button>
+          <button class="tone-tag" data-val="첫 수업 환영">첫 수업 환영</button>
+          <button class="tone-tag" data-val="결석 후 복귀 - 잘 적응함">결석 후 잘 적응</button>
+          <button class="tone-tag" data-val="결석 후 복귀 - 따라잡기 격려">결석 후 격려</button>
+          <button class="tone-tag" data-val="결석 후 복귀 - 진도 안내 포함">결석 후 진도 안내</button>
+        </div>
+      </div>
+      <div>
+        <div class="memo-hint-row"><span class="memo-hint">키워드만 입력해도 OK</span></div>
+        <textarea class="write-area" id="w-keywords" placeholder="예) 신입생 첫 수업, 긴장했지만 잘 따라옴 등&#10;예) 재원생, 명암 표현 많이 늘었음, 다음엔 원근법 등&#10;예) 오늘 결석, 다음 시간에 보충 예정 등&#10;예) 색감이 좋아짐, 구도 연습 더 필요 등"></textarea>
+      </div>
+      <div class="action-row">
+        <button class="btn-generate" id="btn-gen" onclick="generateFeedback()">AI 피드백 완성하기</button>
+        <button class="btn-reset-sm" onclick="resetForm()">초기화</button>
+      </div>
+      <div class="spinner" id="spinner"><div class="spin"></div>AI가 피드백을 작성하고 있어요...</div>
+      <div class="result-wrap" id="result-wrap">
+        <div class="result-label">완성된 피드백</div>
+        <div class="result-text" id="result-text"></div>
+        <div class="result-actions">
+          <button class="btn-action save" onclick="saveFeedback()">저장하기</button>
+          <button class="btn-action" onclick="copyResult('result-text')">복사하기</button>
+          <button class="btn-action" onclick="regenerate()">다시 생성</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 문자 노트 -->
+    <div id="tab-msgnote" class="tab-pane" style="display:none">
+      <div class="tab-heading">문자 노트</div>
+      <div class="tab-desc">자주 보내는 안내 문자를 AI가 대신 작성해드려요.</div>
+      <div class="msg-categories">
+        <button class="cat-btn on" data-cat="unpaid" onclick="selectCat(this)">수강비 미납 안내</button>
+        <button class="cat-btn" data-cat="holiday" onclick="selectCat(this)">공휴일 휴업 안내</button>
+        <button class="cat-btn" data-cat="makeup" onclick="selectCat(this)">보강 안내</button>
+        <button class="cat-btn" data-cat="schedule" onclick="selectCat(this)">일정 변경</button>
+        <button class="cat-btn" data-cat="absent" onclick="selectCat(this)">결석 확인</button>
+        <button class="cat-btn" data-cat="event" onclick="selectCat(this)">이벤트 / 행사</button>
+        <button class="cat-btn" data-cat="reminder" onclick="selectCat(this)">준비물 안내</button>
+        <button class="cat-btn" data-cat="custom" onclick="selectCat(this)">직접 입력</button>
+      </div>
+      <div id="cat-unpaid" class="msg-form">
+        <div class="msg-form-title">수강비 미납 안내</div>
+        <div class="msg-field"><label>안내 내용</label><input type="text" id="u-amount" placeholder="예) 4월 수강비 30만원"/></div>
+        <div class="msg-field"><label>납부 기한</label><input type="text" id="u-due" placeholder="예) 이번 주 금요일까지"/></div>
+        <div class="msg-field"><label>말투</label><select id="u-tone"><option>정중하게</option><option>친절하게</option><option>간결하게</option></select></div>
+      </div>
+      <div id="cat-holiday" class="msg-form" style="display:none">
+        <div class="msg-form-title">공휴일 휴업 안내</div>
+        <div class="msg-field"><label>휴업 날짜</label><input type="text" id="h-date" placeholder="예) 5월 5일 어린이날"/></div>
+        <div class="msg-field"><label>추가 안내 (선택)</label><textarea id="h-extra" placeholder="예) 다음 수업은 7일 월요일부터 정상 운영됩니다"></textarea></div>
+        <div class="msg-field"><label>말투</label><select id="h-tone"><option>친절하게</option><option>간결하게</option><option>따뜻하게</option></select></div>
+      </div>
+      <div id="cat-makeup" class="msg-form" style="display:none">
+        <div class="msg-form-title">보강 안내</div>
+        <div class="row2">
+          <div class="msg-field"><label>학생 이름</label><input type="text" id="mk-name"/></div>
+          <div class="msg-field"><label>보강 일시</label><input type="text" id="mk-date" placeholder="예) 4월 12일 오후 3시"/></div>
+        </div>
+        <div class="msg-field"><label>보강 이유 (선택)</label><input type="text" id="mk-reason" placeholder="예) 지난 주 결석분"/></div>
+        <div class="msg-field"><label>말투</label><select id="mk-tone"><option>친절하게</option><option>따뜻하게</option><option>간결하게</option></select></div>
+      </div>
+      <div id="cat-schedule" class="msg-form" style="display:none">
+        <div class="msg-form-title">일정 변경 안내</div>
+        <div class="row2">
+          <div class="msg-field"><label>기존 일정</label><input type="text" id="sc-from" placeholder="예) 4월 10일 오후 4시"/></div>
+          <div class="msg-field"><label>변경 일정</label><input type="text" id="sc-to" placeholder="예) 4월 11일 오후 4시"/></div>
+        </div>
+        <div class="msg-field"><label>변경 이유 (선택)</label><input type="text" id="sc-reason" placeholder="예) 선생님 사정으로 인해"/></div>
+        <div class="msg-field"><label>말투</label><select id="sc-tone"><option>정중하게</option><option>친절하게</option><option>간결하게</option></select></div>
+      </div>
+      <div id="cat-absent" class="msg-form" style="display:none">
+        <div class="msg-form-title">결석 확인 문자</div>
+        <div class="row2">
+          <div class="msg-field"><label>학생 이름</label><input type="text" id="ab-name"/></div>
+          <div class="msg-field"><label>결석 날짜</label><input type="text" id="ab-date" placeholder="예) 오늘, 4월 8일"/></div>
+        </div>
+        <div class="msg-field"><label>말투</label><select id="ab-tone"><option>걱정스럽게</option><option>친절하게</option><option>간결하게</option></select></div>
+      </div>
+      <div id="cat-event" class="msg-form" style="display:none">
+        <div class="msg-form-title">이벤트 / 행사 안내</div>
+        <div class="msg-field"><label>행사 내용</label><input type="text" id="ev-title" placeholder="예) 봄 미술 전시회, 원생 할인 이벤트"/></div>
+        <div class="msg-field"><label>날짜 / 장소</label><input type="text" id="ev-date" placeholder="예) 4월 20일 오후 2시, 학원 내"/></div>
+        <div class="msg-field"><label>추가 안내 (선택)</label><textarea id="ev-extra" placeholder="예) 참가비 무료, 가족 분들도 환영합니다"></textarea></div>
+        <div class="msg-field"><label>말투</label><select id="ev-tone"><option>밝고 활기차게</option><option>친절하게</option><option>이모지 섞어서</option></select></div>
+      </div>
+      <div id="cat-reminder" class="msg-form" style="display:none">
+        <div class="msg-form-title">준비물 안내</div>
+        <div class="msg-field"><label>준비물 목록</label><textarea id="rm-items" placeholder="예) 4B 연필, 지우개, 스케치북 (A3)"></textarea></div>
+        <div class="msg-field"><label>수업 날짜</label><input type="text" id="rm-date" placeholder="예) 다음 주 수업부터"/></div>
+        <div class="msg-field"><label>말투</label><select id="rm-tone"><option>친절하게</option><option>간결하게</option><option>따뜻하게</option></select></div>
+      </div>
+      <div id="cat-custom" class="msg-form" style="display:none">
+        <div class="msg-form-title">직접 입력</div>
+        <div class="msg-field"><label>전달하고 싶은 내용</label><textarea id="cu-content" style="min-height:120px" placeholder="예) 다음 달부터 수업 시간이 오후 4시로 변경됩니다."></textarea></div>
+        <div class="msg-field"><label>말투</label><select id="cu-tone"><option>친절하게</option><option>따뜻하게</option><option>전문적이게</option><option>간결하게</option><option>이모지 섞어서</option></select></div>
+      </div>
+      <div class="action-row">
+        <button class="btn-generate" id="btn-msg-gen" onclick="generateMsg()">AI 문자 완성하기</button>
+        <button class="btn-reset-sm" onclick="resetMsg()">초기화</button>
+      </div>
+      <div class="spinner" id="spinner-msg"><div class="spin"></div>AI가 문자를 작성하고 있어요...</div>
+      <div class="result-wrap" id="msg-result-wrap">
+        <div class="result-label">완성된 문자</div>
+        <div class="result-text" id="msg-result-text"></div>
+        <div class="result-actions">
+          <button class="btn-action save" onclick="saveMsgNote()">저장하기</button>
+          <button class="btn-action" onclick="copyResult('msg-result-text')">복사하기</button>
+          <button class="btn-action" onclick="regenerateMsg()">다시 생성</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 아이디어 노트 -->
+    <div id="tab-idea" class="tab-pane" style="display:none">
+      <div class="tab-heading">아이디어 노트</div>
+      <div class="tab-desc">수업 재료나 주제를 입력하면 AI가 수업 아이디어를 제안해드려요.</div>
+      <div class="idea-input-area">
+        <div class="msg-field">
+          <label class="write-label">수업 재료 또는 주제</label>
+          <textarea class="write-area" id="idea-input" style="min-height:90px" placeholder="예) 크레파스, A4 용지, 색종이 등&#10;예) 봄 풍경, 나의 가족, 상상의 동물 등&#10;예) 콜라주, 점묘법, 모노프린트 등"></textarea>
+        </div>
+        <div class="row2" style="margin-bottom:0.8rem">
+          <div>
+            <label class="write-label">학생 연령대</label>
+            <select class="write-select" id="idea-age">
+              <option value="">선택 안 함</option>
+              <option value="5~6세 (유아)">5~6세 (유아)</option>
+              <option value="7세 (유치원)">7세 (유치원)</option>
+              <option value="초등 저학년">초등 저학년</option>
+              <option value="초등 고학년">초등 고학년</option>
+              <option value="중학생">중학생</option>
+              <option value="고등학생">고등학생</option>
+              <option value="성인">성인</option>
+            </select>
+          </div>
+          <div>
+            <label class="write-label">수업 시간</label>
+            <select class="write-select" id="idea-time">
+              <option value="">선택 안 함</option>
+              <option value="30분">30분</option>
+              <option value="1시간">1시간</option>
+              <option value="1시간 30분">1시간 30분</option>
+              <option value="2시간 이상">2시간 이상</option>
+            </select>
+          </div>
+        </div>
+        <div class="tone-row" style="margin-top:0.4rem;margin-bottom:0">
+          <label class="write-label">아이디어 방향 <span style="color:var(--ink3);font-size:11px">(선택)</span></label>
+          <div class="tag-group" id="idea-chips">
+            <button class="idea-chip" data-val="단계별 수업">단계별 수업</button>
+            <button class="idea-chip" data-val="자유 표현">자유 표현</button>
+            <button class="idea-chip" data-val="협동 작업">협동 작업</button>
+            <button class="idea-chip" data-val="계절·시즌 맞춤">계절·시즌 맞춤</button>
+            <button class="idea-chip" data-val="명화 감상 연계">명화 감상 연계</button>
+            <button class="idea-chip" data-val="스토리텔링">스토리텔링</button>
+            <button class="idea-chip" data-val="입시 연계">입시 연계</button>
+            <button class="idea-chip" data-val="쉽고 간단하게">쉽고 간단하게</button>
+          </div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button class="btn-generate" id="btn-idea-gen" onclick="generateIdea()">AI 아이디어 제안받기</button>
+        <button class="btn-reset-sm" onclick="resetIdea()">초기화</button>
+      </div>
+      <div class="spinner" id="spinner-idea"><div class="spin"></div>AI가 수업 아이디어를 구상하고 있어요...</div>
+      <div class="result-wrap" id="idea-result-wrap">
+        <div class="result-label">수업 아이디어</div>
+        <div class="result-text" id="idea-result-text"></div>
+        <div class="result-actions">
+          <button class="btn-action save" onclick="saveIdea()">저장하기</button>
+          <button class="btn-action" onclick="copyResult('idea-result-text')">복사하기</button>
+          <button class="btn-action" onclick="regenerateIdea()">다시 생성</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 저장 노트 -->
+    <div id="tab-history" class="tab-pane" style="display:none">
+      <div class="tab-heading">저장 노트</div>
+      <div class="tab-desc">저장된 피드백·문자·아이디어를 확인하고 관리해요.</div>
+      <div class="save-tabs">
+        <button class="save-tab on" data-scat="all" onclick="selectSaveCat(this)">전체</button>
+        <button class="save-tab" data-scat="피드백" onclick="selectSaveCat(this)">피드백 노트</button>
+        <button class="save-tab" data-scat="문자" onclick="selectSaveCat(this)">문자 노트</button>
+        <button class="save-tab" data-scat="아이디어" onclick="selectSaveCat(this)">아이디어 노트</button>
+      </div>
+      <div class="history-search">
+        <input type="text" id="search-input" placeholder="내용으로 검색..." oninput="renderHistory()"/>
+      </div>
+      <div class="select-bar">
+        <div class="select-bar-left">
+          <label class="check-all"><input type="checkbox" id="check-all" onchange="toggleAll()"/> 전체 선택</label>
+          <button class="del-selected" id="del-selected-btn" onclick="deleteSelected()">선택 삭제</button>
+        </div>
+      </div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-label">저장된 내역</div>
+    <div class="modal-name" id="modal-name"></div>
+    <div class="modal-info" id="modal-info"></div>
+    <div id="modal-view-mode">
+      <div class="modal-body" id="modal-body"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="modal-close" onclick="closeModal()">닫기</button>
+        <button class="btn-action" style="font-size:13px;padding:9px 16px" onclick="copyModal()">복사</button>
+        <button class="btn-action" style="font-size:13px;padding:9px 16px" onclick="startEdit()">수정하기</button>
+      </div>
+    </div>
+    <div id="modal-edit-mode" style="display:none">
+      <textarea id="modal-edit-area" style="width:100%;min-height:180px;padding:12px;font-size:14px;line-height:1.9;border:1px solid var(--border);border-radius:var(--radius);background:var(--cream);color:var(--ink);font-family:'Pretendard',sans-serif;resize:vertical;margin-bottom:1rem;"></textarea>
+      <div style="display:flex;gap:8px">
+        <button class="modal-close" onclick="saveEdit()">저장</button>
+        <button class="btn-action" style="font-size:13px;padding:9px 16px" onclick="cancelEdit()">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentUser=null, selectedTones=new Set(), lastKeywords='', currentCat='unpaid';
+let currentSaveCat='all', ideaChips=new Set(), currentModalId=null;
+
+function goScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+n).classList.add('active');}
+function goAuth(tab){goScreen('auth');switchAuthTab(tab);}
+function switchAuthTab(tab){
+  document.getElementById('form-login').style.display=tab==='login'?'':'none';
+  document.getElementById('form-signup').style.display=tab==='signup'?'':'none';
+  document.getElementById('tab-login-btn').classList.toggle('on',tab==='login');
+  document.getElementById('tab-signup-btn').classList.toggle('on',tab==='signup');
+}
+function getUsers(){try{return JSON.parse(localStorage.getItem('artnoteUsers')||'{}');}catch{return{};}}
+function saveUsers(u){localStorage.setItem('artnoteUsers',JSON.stringify(u));}
+function doLogin(){
+  const id=document.getElementById('login-id').value.trim(), pw=document.getElementById('login-pw').value, msg=document.getElementById('login-msg'), users=getUsers();
+  if(!id||!pw){msg.textContent='아이디와 비밀번호를 입력해주세요.';return;}
+  if(!users[id]||users[id].pw!==pw){msg.textContent='아이디 또는 비밀번호가 맞지 않아요.';return;}
+  msg.textContent=''; loginSuccess(id,users[id].name);
+}
+function doSignup(){
+  const name=document.getElementById('su-name').value.trim(), id=document.getElementById('su-id').value.trim(), pw=document.getElementById('su-pw').value, msg=document.getElementById('signup-msg'), users=getUsers();
+  if(!name||!id||!pw){msg.textContent='모든 항목을 입력해주세요.';return;}
+  if(id.length<4){msg.textContent='아이디는 4자 이상이어야 해요.';return;}
+  if(pw.length<6){msg.textContent='비밀번호는 6자 이상이어야 해요.';return;}
+  if(users[id]){msg.textContent='이미 사용 중인 아이디예요.';return;}
+  users[id]={name,pw,feedback:[],msg:[],idea:[]};
+  saveUsers(users); loginSuccess(id,name);
+}
+function loginSuccess(id,name){currentUser={id,name};document.getElementById('user-avatar').textContent=name;goScreen('app');}
+function doLogout(){currentUser=null;resetForm();goScreen('landing');}
+
+function switchTab(tab){
+  ['feedback','msgnote','idea','history'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===tab?'':'none';
+    document.getElementById('nav-'+t).classList.toggle('on',t===tab);
+  });
+  if(tab==='history')renderHistory();
+}
+
+// 피드백 노트
+document.querySelectorAll('.tone-tag').forEach(tag=>{
+  tag.addEventListener('click',()=>{
+    if(selectedTones.has(tag.dataset.val)){selectedTones.delete(tag.dataset.val);tag.classList.remove('on');}
+    else{selectedTones.add(tag.dataset.val);tag.classList.add('on');}
+  });
+});
+async function generateFeedback(){
+  const name=document.getElementById('w-name').value.trim();
+  const style=document.getElementById('w-subject').value;
+  const age=document.getElementById('w-age').value;
+  const keywords=document.getElementById('w-keywords').value.trim();
+  if(!keywords){alert('수업 내용을 입력해주세요.');return;}
+  lastKeywords=keywords;
+  setLoading('btn-gen','spinner',true,'result-wrap');
+  const styleLabel=style||'따뜻하게', toneLabel=selectedTones.size>0?[...selectedTones].join(', '):'균형잡힌', ageLabel=age||'';
+  const prompt=`당신은 미술학원 선생님입니다.
+아래 정보를 바탕으로 학부모님께 보낼 피드백 문자를 작성해주세요.
+
+말투 스타일: ${styleLabel}
+피드백 방향: ${toneLabel}
+${ageLabel?`학생 나이: ${ageLabel}`:''}
+선생님 메모: ${keywords}
+
+작성 규칙:
+- 250~350자 내외로 자연스럽고 읽기 편하게
+- 실제 선생님이 직접 쓴 것처럼 1인칭으로 작성 (저는, 제가 등 사용)
+- "선생님도", "선생님이", "선생님은" 같은 3인칭 표현 절대 금지
+- 모든 문장은 반드시 존댓말로 작성 (했습니다, 드립니다, 바랍니다, 보여요, 해요 등 자연스럽게 섞어서)
+- "~다" 체와 "~요" 체를 적절히 혼용하되 반드시 존댓말 유지
+- 학생 이름이 있으면 자연스럽게 한 번만 언급할 것 (예: "○○이가 오늘은~", "○○ 학생의 작업이~")
+- 재료(물감, 붓, 도구 등) 관련 내용은 절대 언급하지 말 것
+- 학생 나이에 맞는 어휘와 표현 수준으로 작성
+- 수업에서 느낀 점, 성장한 부분, 앞으로의 방향을 자연스럽게 녹여낼 것
+- 말투 스타일을 충실히 반영 (이모지 스타일이면 이모지 실제로 포함)
+- 문장 연결이 매끄럽고 읽었을 때 진심이 느껴지게
+- "안녕하세요" 같은 인사 없이 바로 본문 시작
+- 피드백 내용만 출력, 다른 설명 금지`;
+  await callAI(prompt,'result-text','result-wrap','btn-gen','spinner');
+}
+function regenerate(){generateFeedback();}
+function resetForm(){
+  ['w-name','w-subject','w-age','w-keywords'].forEach(id=>document.getElementById(id).value='');
+  selectedTones.clear();document.querySelectorAll('.tone-tag').forEach(t=>t.classList.remove('on'));
+  document.getElementById('result-wrap').classList.remove('show');
+  document.getElementById('result-text').textContent='';
+}
+function saveFeedback(){
+  if(!currentUser)return;
+  const name=document.getElementById('w-name').value.trim()||'이름 미입력';
+  const tag=document.getElementById('w-subject').value||'말투 미선택';
+  const text=document.getElementById('result-text').textContent; if(!text)return;
+  const users=getUsers();
+  if(!users[currentUser.id].feedback)users[currentUser.id].feedback=[];
+  users[currentUser.id].feedback.unshift({id:Date.now(),type:'피드백',name,tag,text,date:new Date().toLocaleDateString('ko-KR')});
+  saveUsers(users); flashBtn(event.target,'저장됨!','저장하기');
+}
+
+// 문자 노트
+function selectCat(el){
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('on')); el.classList.add('on');
+  currentCat=el.dataset.cat;
+  document.querySelectorAll('.msg-form').forEach(f=>f.style.display='none');
+  document.getElementById('cat-'+currentCat).style.display='';
+  document.getElementById('msg-result-wrap').classList.remove('show');
+}
+function getMsgPrompt(){
+  const labels={unpaid:'수강비 미납 안내',holiday:'공휴일 휴업 안내',makeup:'보강 안내',schedule:'일정 변경 안내',absent:'결석 확인',event:'이벤트/행사 안내',reminder:'준비물 안내',custom:'일반 안내'};
+  let details='',tone='친절하게';
+  if(currentCat==='unpaid'){const a=document.getElementById('u-amount').value.trim(),d=document.getElementById('u-due').value.trim();tone=document.getElementById('u-tone').value;if(!a){alert('안내 내용을 입력해주세요.');return null;}details=`안내 내용: ${a}\n납부 기한: ${d||'미입력'}`;}
+  else if(currentCat==='holiday'){const d=document.getElementById('h-date').value.trim(),e=document.getElementById('h-extra').value.trim();tone=document.getElementById('h-tone').value;if(!d){alert('휴업 날짜를 입력해주세요.');return null;}details=`휴업 날짜: ${d}${e?'\n추가: '+e:''}`;}
+  else if(currentCat==='makeup'){const n=document.getElementById('mk-name').value.trim(),d=document.getElementById('mk-date').value.trim(),r=document.getElementById('mk-reason').value.trim();tone=document.getElementById('mk-tone').value;if(!d){alert('보강 일시를 입력해주세요.');return null;}details=`${n?'학생: '+n+'\n':''}보강 일시: ${d}${r?'\n이유: '+r:''}`;}
+  else if(currentCat==='schedule'){const f=document.getElementById('sc-from').value.trim(),t2=document.getElementById('sc-to').value.trim(),r=document.getElementById('sc-reason').value.trim();tone=document.getElementById('sc-tone').value;if(!f||!t2){alert('일정을 입력해주세요.');return null;}details=`기존: ${f}\n변경: ${t2}${r?'\n이유: '+r:''}`;}
+  else if(currentCat==='absent'){const n=document.getElementById('ab-name').value.trim(),d=document.getElementById('ab-date').value.trim();tone=document.getElementById('ab-tone').value;details=`${n?'학생: '+n+'\n':''}결석 날짜: ${d||'오늘'}`;}
+  else if(currentCat==='event'){const t2=document.getElementById('ev-title').value.trim(),d=document.getElementById('ev-date').value.trim(),e=document.getElementById('ev-extra').value.trim();tone=document.getElementById('ev-tone').value;if(!t2){alert('행사 내용을 입력해주세요.');return null;}details=`행사: ${t2}\n날짜/장소: ${d||'미입력'}${e?'\n추가: '+e:''}`;}
+  else if(currentCat==='reminder'){const i=document.getElementById('rm-items').value.trim(),d=document.getElementById('rm-date').value.trim();tone=document.getElementById('rm-tone').value;if(!i){alert('준비물을 입력해주세요.');return null;}details=`준비물: ${i}\n수업 날짜: ${d||'미입력'}`;}
+  else if(currentCat==='custom'){const c=document.getElementById('cu-content').value.trim();tone=document.getElementById('cu-tone').value;if(!c){alert('내용을 입력해주세요.');return null;}details=`내용: ${c}`;}
+  return `당신은 미술학원 선생님입니다.\n아래 정보를 바탕으로 학부모에게 보낼 안내 문자를 작성해주세요.\n\n문자 유형: ${labels[currentCat]}\n말투: ${tone}\n내용:\n${details}\n\n요구사항:\n- 150~250자 내외\n- 말투를 충실히 반영\n- 신뢰감 있는 문체\n- 문자 내용만 출력, 다른 설명 없음`;
+}
+async function generateMsg(){const p=getMsgPrompt();if(!p)return;await callAI(p,'msg-result-text','msg-result-wrap','btn-msg-gen','spinner-msg');}
+function regenerateMsg(){generateMsg();}
+function resetMsg(){document.querySelectorAll('.msg-form input,.msg-form textarea').forEach(el=>el.value='');document.getElementById('msg-result-wrap').classList.remove('show');document.getElementById('msg-result-text').textContent='';}
+function saveMsgNote(){
+  if(!currentUser)return;
+  const labels={unpaid:'수강비 미납',holiday:'공휴일 휴업',makeup:'보강 안내',schedule:'일정 변경',absent:'결석 확인',event:'이벤트',reminder:'준비물',custom:'직접 입력'};
+  const text=document.getElementById('msg-result-text').textContent; if(!text)return;
+  const users=getUsers();
+  if(!users[currentUser.id].msg)users[currentUser.id].msg=[];
+  users[currentUser.id].msg.unshift({id:Date.now(),type:'문자',name:labels[currentCat]||'문자',tag:labels[currentCat],text,date:new Date().toLocaleDateString('ko-KR')});
+  saveUsers(users); flashBtn(event.target,'저장됨!','저장하기');
+}
+
+// 아이디어 노트
+document.querySelectorAll('.idea-chip').forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    if(ideaChips.has(chip.dataset.val)){ideaChips.delete(chip.dataset.val);chip.classList.remove('on');}
+    else{ideaChips.add(chip.dataset.val);chip.classList.add('on');}
+  });
+});
+async function generateIdea(){
+  const input=document.getElementById('idea-input').value.trim();
+  if(!input){alert('재료나 주제를 입력해주세요.');return;}
+  const age=document.getElementById('idea-age').value;
+  const time=document.getElementById('idea-time').value;
+  const dir=ideaChips.size>0?[...ideaChips].join(', '):'';
+  const prompt=`당신은 경험 많은 미술학원 선생님입니다.
+아래 조건에 맞는 수업 아이디어를 제안해주세요.
+
+재료/주제: ${input}
+${age?`학생 연령대: ${age}`:''}
+${time?`수업 시간: ${time}`:''}
+${dir?`아이디어 방향: ${dir}`:''}
+
+작성 규칙:
+- 수업 아이디어 2~3가지를 구체적으로 제안
+- 각 아이디어마다 제목, 수업 흐름(단계), 포인트(주의사항이나 팁) 포함
+- 선생님이 바로 활용할 수 있을 정도로 구체적으로
+- 연령대에 맞는 난이도와 표현 방식 반영
+- 자연스러운 한국어로 작성
+- 아이디어 내용만 출력, 다른 설명 없음`;
+  await callAI(prompt,'idea-result-text','idea-result-wrap','btn-idea-gen','spinner-idea');
+}
+function regenerateIdea(){generateIdea();}
+function resetIdea(){
+  document.getElementById('idea-input').value='';
+  document.getElementById('idea-age').value='';
+  document.getElementById('idea-time').value='';
+  ideaChips.clear();document.querySelectorAll('.idea-chip').forEach(c=>c.classList.remove('on'));
+  document.getElementById('idea-result-wrap').classList.remove('show');
+  document.getElementById('idea-result-text').textContent='';
+}
+function saveIdea(){
+  if(!currentUser)return;
+  const text=document.getElementById('idea-result-text').textContent; if(!text)return;
+  const input=document.getElementById('idea-input').value.trim()||'재료/주제 미입력';
+  const users=getUsers();
+  if(!users[currentUser.id].idea)users[currentUser.id].idea=[];
+  users[currentUser.id].idea.unshift({id:Date.now(),type:'아이디어',name:input,tag:'아이디어 노트',text,date:new Date().toLocaleDateString('ko-KR')});
+  saveUsers(users); flashBtn(event.target,'저장됨!','저장하기');
+}
+
+// 저장 노트
+function selectSaveCat(el){
+  document.querySelectorAll('.save-tab').forEach(t=>t.classList.remove('on')); el.classList.add('on');
+  currentSaveCat=el.dataset.scat;
+  document.getElementById('check-all').checked=false;
+  document.getElementById('del-selected-btn').classList.remove('show');
+  renderHistory();
+}
+function getAllHistory(){
+  if(!currentUser)return[];
+  const users=getUsers(); const u=users[currentUser.id];
+  const fb=(u.feedback||[]), msg=(u.msg||[]), idea=(u.idea||[]);
+  if(currentSaveCat==='all')return[...fb,...msg,...idea].sort((a,b)=>b.id-a.id);
+  if(currentSaveCat==='피드백')return fb;
+  if(currentSaveCat==='문자')return msg;
+  if(currentSaveCat==='아이디어')return idea;
+  return[];
+}
+function renderHistory(){
+  if(!currentUser)return;
+  const q=document.getElementById('search-input').value.trim().toLowerCase();
+  let items=getAllHistory();
+  if(q)items=items.filter(h=>(h.name+h.text).toLowerCase().includes(q));
+  const list=document.getElementById('history-list');
+  if(!items.length){list.innerHTML='<div class="history-empty">아직 저장된 내역이 없어요.<br>작성 후 저장해보세요.</div>';return;}
+  list.innerHTML='';
+  items.forEach(h=>{
+    const card=document.createElement('div'); card.className='history-card';
+    card.innerHTML=`<input type="checkbox" class="hc-check" data-id="${h.id}" data-type="${h.type}" onchange="onCheckChange()"/>
+      <div class="hc-body">
+        <div class="hc-top">
+          <div class="hc-name">${h.name}</div>
+          <div class="hc-meta">
+            <span class="hc-tag">${h.type}</span>
+            <span class="hc-date">${h.date}</span>
+          </div>
+        </div>
+        <div class="hc-preview">${h.text}</div>
+      </div>`;
+    card.querySelector('.hc-body').addEventListener('click',()=>openModal(h.id,h.type));
+    list.appendChild(card);
+  });
+}
+function onCheckChange(){
+  const anyChecked=document.querySelectorAll('.hc-check:checked').length>0;
+  document.getElementById('del-selected-btn').classList.toggle('show',anyChecked);
+}
+function toggleAll(){
+  const checked=document.getElementById('check-all').checked;
+  document.querySelectorAll('.hc-check').forEach(c=>c.checked=checked);
+  onCheckChange();
+}
+function deleteSelected(){
+  const boxes=[...document.querySelectorAll('.hc-check:checked')];
+  if(!boxes.length)return;
+  const users=getUsers(); const u=users[currentUser.id];
+  boxes.forEach(box=>{
+    const id=Number(box.dataset.id), type=box.dataset.type;
+    if(type==='피드백')u.feedback=(u.feedback||[]).filter(h=>h.id!==id);
+    else if(type==='문자')u.msg=(u.msg||[]).filter(h=>h.id!==id);
+    else if(type==='아이디어')u.idea=(u.idea||[]).filter(h=>h.id!==id);
+  });
+  saveUsers(users);
+  document.getElementById('check-all').checked=false;
+  document.getElementById('del-selected-btn').classList.remove('show');
+  renderHistory();
+}
+
+// Modal
+function openModal(id,type){
+  const users=getUsers(); const u=users[currentUser.id];
+  let h;
+  if(type==='피드백')h=(u.feedback||[]).find(x=>x.id===id);
+  else if(type==='문자')h=(u.msg||[]).find(x=>x.id===id);
+  else if(type==='아이디어')h=(u.idea||[]).find(x=>x.id===id);
+  if(!h)return;
+  currentModalId={id,type};
+  document.getElementById('modal-name').textContent=h.name;
+  document.getElementById('modal-info').textContent=`${h.type} · ${h.date}`;
+  document.getElementById('modal-body').textContent=h.text;
+  document.getElementById('modal-view-mode').style.display='';
+  document.getElementById('modal-edit-mode').style.display='none';
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(e){if(!e||e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('show');}
+function copyModal(){navigator.clipboard.writeText(document.getElementById('modal-body').textContent).then(()=>{const b=event.target;b.textContent='복사됨!';setTimeout(()=>b.textContent='복사',1500);});}
+function startEdit(){document.getElementById('modal-edit-area').value=document.getElementById('modal-body').textContent;document.getElementById('modal-view-mode').style.display='none';document.getElementById('modal-edit-mode').style.display='';}
+function cancelEdit(){document.getElementById('modal-view-mode').style.display='';document.getElementById('modal-edit-mode').style.display='none';}
+function saveEdit(){
+  const newText=document.getElementById('modal-edit-area').value.trim(); if(!newText)return;
+  const {id,type}=currentModalId;
+  const users=getUsers(); const u=users[currentUser.id];
+  let arr;
+  if(type==='피드백')arr=u.feedback;
+  else if(type==='문자')arr=u.msg;
+  else if(type==='아이디어')arr=u.idea;
+  const idx=arr.findIndex(h=>h.id===id); if(idx===-1)return;
+  arr[idx].text=newText; saveUsers(users);
+  document.getElementById('modal-body').textContent=newText;
+  document.getElementById('modal-view-mode').style.display='';
+  document.getElementById('modal-edit-mode').style.display='none';
+  renderHistory();
+}
+
+// Helpers
+async function callAI(prompt,textId,wrapId,btnId,spinnerId){
+  document.getElementById(btnId).disabled=true;
+  document.getElementById(spinnerId).classList.add('show');
+  document.getElementById(wrapId).classList.remove('show');
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1024,messages:[{role:'user',content:prompt}]})});
+    const data=await res.json();
+    const text=data.content?.map(b=>b.text||'').join('')||'생성 실패. 다시 시도해주세요.';
+    document.getElementById(textId).textContent=text;
+    document.getElementById(wrapId).classList.add('show');
+  }catch(e){document.getElementById(textId).textContent='오류가 발생했습니다. 다시 시도해주세요.';document.getElementById(wrapId).classList.add('show');}
+  finally{document.getElementById(spinnerId).classList.remove('show');document.getElementById(btnId).disabled=false;}
+}
+function copyResult(id){navigator.clipboard.writeText(document.getElementById(id).textContent).then(()=>{const b=event.target;b.textContent='복사됨!';setTimeout(()=>b.textContent='복사하기',1500);});}
+function flashBtn(btn,on,off){btn.textContent=on;setTimeout(()=>btn.textContent=off,1500);}
+function setLoading(btnId,spinnerId,state,wrapId){document.getElementById(btnId).disabled=state;document.getElementById(spinnerId).classList.toggle('show',state);if(state)document.getElementById(wrapId).classList.remove('show');}
+</script>
+</body>
+</html>
